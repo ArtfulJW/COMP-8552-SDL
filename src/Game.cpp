@@ -1,6 +1,12 @@
 ﻿#include "Game.h"
+
+#include "GameObject.h"
+#include "Map.h"
 #include "iostream"
 #include "ostream"
+
+Map* map = nullptr;
+GameObject* player = nullptr;
 
 Game::Game()
 {
@@ -47,6 +53,9 @@ void Game::init(const char* title, int width, int height, bool bIsFullscreen)
     {
         bIsRunning = false;
     }
+
+    map = new Map();
+    player = new GameObject("../Asset/ball.png", 0, 0);
 }
 
 void Game::HandleEvents()
@@ -68,10 +77,13 @@ void Game::HandleEvents()
     }
 }
 
-void Game::Update()
+void Game::Update(float deltaTime)
 {
-    FrameCount++;
+    // FrameCount++;
     std::cout << FrameCount << std::endl;
+
+    // Remember to update Player
+    player->update(deltaTime);
 }
 
 void Game::Render()
@@ -81,9 +93,25 @@ void Game::Render()
     b = 50;
     a = 255;
 
-    SDL_SetRenderDrawColor(SDLRenderer, r, g, b, a);
+    SDL_SetRenderDrawColor(SDLRenderer, 255, 255, 255, 255);
 
     SDL_RenderClear(SDLRenderer);
+
+    map->DrawMap();
+    player->draw();
+
+    SDL_RenderPresent(SDLRenderer);
+}
+
+void Game::Destroy()
+{
+    SDL_DestroyRenderer(SDLRenderer);
+    SDL_DestroyWindow(SDLWindow);
+    SDL_Quit();
+    std::cout << "Game Destroyed" << std::endl;
+}
+
+void Game::randomizeColor() {
 
     if (FrameCount % 60 == 0) {
         r = rand() % 255;
@@ -95,12 +123,5 @@ void Game::Render()
         SDL_RenderClear(SDLRenderer);
         SDL_RenderPresent(SDLRenderer);
     }
-}
 
-void Game::Destroy()
-{
-    SDL_DestroyRenderer(SDLRenderer);
-    SDL_DestroyWindow(SDLWindow);
-    SDL_Quit();
-    std::cout << "Game Destroyed" << std::endl;
 }
