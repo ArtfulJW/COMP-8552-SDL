@@ -1,12 +1,12 @@
 ﻿#include "Game.h"
 
-#include "GameObject.h"
+// #include "GameObject.h"
 #include "Map.h"
 #include "iostream"
 #include "ostream"
 
 Map* map = nullptr;
-GameObject* player = nullptr;
+// GameObject* player = nullptr;
 
 Game::Game()
 {
@@ -55,7 +55,16 @@ void Game::init(const char* title, int width, int height, bool bIsFullscreen)
     }
 
     map = new Map();
-    player = new GameObject("../Asset/ball.png", 0, 0);
+    // player = new GameObject("../Asset/ball.png", 0, 0);
+
+    // Add Entities
+    auto& player(world.createEntity());
+    auto& playerPosition = player.addComponent<Position>(0,0);
+
+    SDL_Texture* tex = TextureManager::Load("../asset/ball.png");
+    SDL_FRect playerSrc{0,0,32,32};
+    SDL_FRect playerDst{playerPosition.x,playerPosition.y,64,64};
+    player.addComponent<Sprite>(tex, playerSrc, playerDst);
 }
 
 void Game::HandleEvents()
@@ -79,11 +88,13 @@ void Game::HandleEvents()
 
 void Game::Update(float deltaTime)
 {
-    // FrameCount++;
-    std::cout << FrameCount << std::endl;
+    // // FrameCount++;
+    // std::cout << FrameCount << std::endl;
+    //
+    // // Remember to update Player
+    // player->update(deltaTime);
 
-    // Remember to update Player
-    player->update(deltaTime);
+    world.update(deltaTime);
 }
 
 void Game::Render()
@@ -98,7 +109,9 @@ void Game::Render()
     SDL_RenderClear(SDLRenderer);
 
     map->DrawMap();
-    player->draw();
+    // player->draw();
+
+    world.render();
 
     SDL_RenderPresent(SDLRenderer);
 }

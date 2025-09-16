@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "World.h"
 #include "SDL3/SDL.h"
 
 class Game
@@ -7,6 +8,8 @@ class Game
 public:
 
     SDL_Renderer* SDLRenderer = nullptr;
+
+    World world;
 
     Game();
 

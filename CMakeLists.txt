@@ -9,6 +9,9 @@ if(WIN32)
     include_directories(
             ${SDL3_PATH}/include
             ${SDL3_IMAGE_PATH}/include
+            ${PROJECT_SOURCE_DIR}/src
+            ${PROJECT_SOURCE_DIR}/src/ecs
+            ${PROJECT_SOURCE_DIR}/src/ecs/system
     )
     link_directories(
             ${SDL3_PATH}/lib
@@ -19,7 +22,14 @@ endif()
 add_executable(COMP_8552_Week1_CLion src/main.cpp src/Game.cpp
         src/TextureManager.cpp
         src/Map.cpp
-        src/GameObject.cpp)
+        src/GameObject.cpp
+        src/ecs/ComponentType.h
+        src/ecs/Entity.h
+        src/ecs/Component.h
+        src/ecs/system/MovementSystem.cpp
+        src/ecs/system/MovementSystem.h
+        src/ecs/system/RenderSystem.h
+        src/ecs/World.h)
 
 target_link_libraries(COMP_8552_Week1_CLion
         SDL3

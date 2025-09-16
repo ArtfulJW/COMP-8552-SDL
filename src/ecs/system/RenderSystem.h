@@ -1,0 +1,29 @@
+//
+// Created by User on 9/16/2025.
+//
+
+#ifndef COMP_8552_WEEK1_CLION_RENDERSYSTEM_H
+#define COMP_8552_WEEK1_CLION_RENDERSYSTEM_H
+#include <memory>
+#include <vector>
+
+#include "Component.h"
+#include "Entity.h"
+#include "TextureManager.h"
+
+class RenderSystem {
+public:
+    void render(const std::vector<std::unique_ptr<Entity>>& entities) {
+        for (auto& entity : entities) {
+            if (entity->hasComponent<Position>() && entity->hasComponent<Sprite>()) {
+                auto& position = entity->getComponent<Position>();
+                auto& sprite = entity->getComponent<Sprite>();
+                sprite.dst.x = position.x;
+                sprite.dst.y = position.y;
+                TextureManager::Draw(sprite.texture, sprite.src, sprite.dst);
+            }
+        }
+    }
+};
+
+#endif //COMP_8552_WEEK1_CLION_RENDERSYSTEM_H
