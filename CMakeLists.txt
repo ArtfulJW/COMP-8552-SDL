@@ -29,7 +29,8 @@ add_executable(COMP_8552_Week1_CLion src/main.cpp src/Game.cpp
         src/ecs/system/MovementSystem.cpp
         src/ecs/system/MovementSystem.h
         src/ecs/system/RenderSystem.h
-        src/ecs/World.h)
+        src/ecs/World.h
+        src/Vector2D.cpp)
 
 target_link_libraries(COMP_8552_Week1_CLion
         SDL3

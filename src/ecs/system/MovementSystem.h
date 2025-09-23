@@ -15,10 +15,20 @@ class MovementSystem {
 public:
     void update(std::vector<std::unique_ptr<Entity>>& entities, float deltaTime) {
         for (auto& entity : entities) {
-            if (entity->hasComponent<Position>()) {
-                auto& position = entity->getComponent<Position>();
-                position.x += 60 * deltaTime;
-                position.y += 60 * deltaTime;
+            if (entity->hasComponent<Transform>() && entity->hasComponent<Velocity>()) {
+                auto& t = entity->getComponent<Transform>();
+                auto& v = entity->getComponent<Velocity>();
+
+                Vector2D directionVec = v.direction;
+
+                // Normalize Vector
+                directionVec.normalize();
+
+                // Custom multiply operator for Vector2D
+                Vector2D velocityVector = directionVec * v.speed;
+
+                // Update Position
+                t.position += velocityVector * deltaTime;
             }
         }
     }

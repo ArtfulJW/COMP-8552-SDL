@@ -50,6 +50,7 @@ private:
     bool bIsRunning = false;
 
     SDL_Window* SDLWindow = nullptr;
+    SDL_Event event;
 
     Uint8 r,g,b,a; 
 };

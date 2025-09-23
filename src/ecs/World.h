@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "Entity.h"
+#include "KeyboardInputSystem.h"
 #include "MovementSystem.h"
 #include "RenderSystem.h"
 
@@ -16,9 +17,12 @@ private:
     std::vector<std::unique_ptr<Entity>> entities;
     MovementSystem movementSystem;
     RenderSystem renderSystem;
+    KeyboardInputSystem KeyboardInputSystem;
 public:
-    void update(float deltaTime) {
+    void update(float deltaTime, const SDL_Event& event) {
+        KeyboardInputSystem.update(entities, event);
         movementSystem.update(entities, deltaTime);
+        cleanup();
     }
 
     void render() {
