@@ -13,8 +13,50 @@ Vector2D& Vector2D::operator+=(const Vector2D &vec) {
     return *this;
 }
 
+Vector2D & Vector2D::operator-=(const Vector2D &vec) {
+    this->x -= vec.x;
+    this->y -= vec.y;
+    return *this;
+}
+
+Vector2D & Vector2D::operator*=(float scalar) {
+    this->x *= scalar;
+    this->y *= scalar;
+    return *this;
+}
+
+Vector2D & Vector2D::operator/=(float scalar) {
+    this->x /= scalar;
+    this->y /= scalar;
+    return *this;
+}
+
+Vector2D Vector2D::operator+(const Vector2D &vec) {
+    return Vector2D(x + vec.x, y + vec.y);
+}
+
+Vector2D Vector2D::operator-(const Vector2D &vec) {
+    return Vector2D(x - vec.x, y - vec.y);
+}
+
 Vector2D Vector2D::operator*(float scalar) const {
     return Vector2D(x * scalar, y * scalar);
+}
+
+Vector2D Vector2D::operator/(float scalar) const {
+    return Vector2D(x / scalar, y / scalar);
+}
+
+bool Vector2D::operator==(const Vector2D &vec) {
+    return x == vec.x && y == vec.y;
+}
+
+bool Vector2D::operator!=(const Vector2D &vec) {
+    return x != vec.x || y != vec.y;
+}
+
+Vector2D Vector2D::operator-() const {
+    return Vector2D(-this->x, -this->y);
 }
 
 Vector2D & Vector2D::normalize() {

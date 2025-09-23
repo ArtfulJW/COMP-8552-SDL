@@ -22,13 +22,32 @@ public:
     // Other vector we want to add is on the right
     Vector2D& operator+=(const Vector2D& vec);
 
+    Vector2D& operator-=(const Vector2D& vec);
+
+    Vector2D& operator*=(float scalar);
+
+    Vector2D& operator/=(float scalar);
+
+    Vector2D operator+(const Vector2D& vec);
+
+    Vector2D operator-(const Vector2D& vec);
+
     // Vector2D has to be on the left, and scalar on the right
     Vector2D operator*(float scalar) const;
+
+    Vector2D operator/(float scalar) const;
 
     // Vector2D on right, scalar on left.
     // Friend makes this a non-member function to bypass previous (*) definition
     // Still need to provide implementation in source cpp file.
     friend Vector2D operator*(float scalar, Vector2D& vec);
+
+    bool operator==(const Vector2D& vec);
+
+    bool operator!=(const Vector2D& vec);
+
+    // Negation operator
+    Vector2D operator-() const;
 
     Vector2D& normalize();
 };
