@@ -5,10 +5,34 @@ set(CMAKE_CXX_STANDARD 20)
 
 if(WIN32)
     set(SDL3_PATH "C:/sdl3")
-    include_directories(${SDL3_PATH}/include)
-    link_directories(${SDL3_PATH}/lib)
+    set(SDL3_IMAGE_PATH "C:/sdl3_image")
+    include_directories(
+            ${SDL3_PATH}/include
+            ${SDL3_IMAGE_PATH}/include
+            ${PROJECT_SOURCE_DIR}/src
+            ${PROJECT_SOURCE_DIR}/src/ecs
+            ${PROJECT_SOURCE_DIR}/src/ecs/system
+    )
+    link_directories(
+            ${SDL3_PATH}/lib
+            ${SDL3_IMAGE_PATH}/lib
+    )
 endif()
 
-add_executable(COMP_8552_Week1_CLion main.cpp Game.cpp)
+add_executable(COMP_8552_Week1_CLion src/main.cpp src/Game.cpp
+        src/TextureManager.cpp
+        src/Map.cpp
+        src/GameObject.cpp
+        src/ecs/ComponentType.h
+        src/ecs/Entity.h
+        src/ecs/Component.h
+        src/ecs/system/MovementSystem.cpp
+        src/ecs/system/MovementSystem.h
+        src/ecs/system/RenderSystem.h
+        src/ecs/World.h
+        src/Vector2D.cpp)
 
-target_link_libraries(COMP_8552_Week1_CLion SDL3)
+target_link_libraries(COMP_8552_Week1_CLion
+        SDL3
+        SDL3_image
+)
