@@ -58,14 +58,27 @@ void Game::init(const char* title, int width, int height, bool bIsFullscreen)
     // player = new GameObject("../Asset/ball.png", 0, 0);
 
     // Add Entities
+    auto& item(world.createEntity());
+    auto& itemTransform = item.addComponent<Transform>(Vector2D(100, 200), 0.0f, 1.0f);
+    SDL_Texture* itemTex = TextureManager::Load("../asset/coin.png");
+    SDL_FRect itemSrc {0,0,32,32};
+    SDL_FRect itemDest {itemTransform.position.x, itemTransform.position.y, 32, 32};
+    item.addComponent<Sprite>(itemTex, itemSrc, itemDest);
+    auto& itemCollider = item.addComponent<Collider>("item");
+    itemCollider.rect.w = itemDest.w;
+    itemCollider.rect.h = itemDest.h;
+
     auto& player(world.createEntity());
     auto& playerTransform = player.addComponent<Transform>(Vector2D(0,0), 0.0f, 1.0f);
-    auto& playerVelocity = player.addComponent<Velocity>(Vector2D(0,0), 60.0f);
+    auto& playerVelocity = player.addComponent<Velocity>(Vector2D(0,0), 120.0f);
 
     SDL_Texture* tex = TextureManager::Load("../asset/mario.png");
     SDL_FRect playerSrc{0,0,32,44};
     SDL_FRect playerDst{playerTransform.position.x,playerTransform.position.y,64,88};
     player.addComponent<Sprite>(tex, playerSrc, playerDst);
+    auto& playerCollider = player.addComponent<Collider>("player");
+    playerCollider.rect.w = playerDst.w;
+    playerCollider.rect.h = playerDst.h;
 }
 
 void Game::HandleEvents()
@@ -119,6 +132,7 @@ void Game::Render()
 
 void Game::Destroy()
 {
+    TextureManager::clean();
     SDL_DestroyRenderer(SDLRenderer);
     SDL_DestroyWindow(SDLWindow);
     SDL_Quit();

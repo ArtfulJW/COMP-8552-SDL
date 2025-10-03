@@ -8,8 +8,17 @@
 #include <ostream>
 
 extern Game* SDLGame;
+std::unordered_map<std::string, SDL_Texture*> TextureManager::textures;
 
 SDL_Texture *TextureManager::Load(const char *path) {
+
+    // Caching: Storing the result of some work so you don't have to repeat the work next time.
+    // Check if the texture already exists in the map
+    auto it = textures.find(path);
+    if (it != textures.end())
+    {
+        return it->second;
+    }
 
     /*
      * A Surface represents an image in RAM.
@@ -28,6 +37,16 @@ SDL_Texture *TextureManager::Load(const char *path) {
     // Cleanup surface
     SDL_DestroySurface(TempSurface);
 
+    // Check if the texture creation was successful
+    if (!TempTexture)
+    {
+        std::cout << "Failed to create texture: " << path << std::endl;
+        return nullptr;
+    }
+
+    // Store the new texture in the cache
+    textures[path] = TempTexture;
+
     return TempTexture;
 }
 
@@ -35,4 +54,14 @@ void TextureManager::Draw(SDL_Texture *InTexture, SDL_FRect SourceFRect, SDL_FRe
 
     // Draw texture to screen from VRAM.
     SDL_RenderTexture(SDLGame->SDLRenderer, InTexture, &SourceFRect, &DestFRect);
+}
+
+void TextureManager::clean()
+{
+    for (auto& tex : textures)
+    {
+        SDL_DestroyTexture(tex.second);
+        tex.second = nullptr;
+    }
+    textures.clear();
 }

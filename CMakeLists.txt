@@ -10,6 +10,7 @@ if(WIN32)
             ${SDL3_PATH}/include
             ${SDL3_IMAGE_PATH}/include
             ${PROJECT_SOURCE_DIR}/src
+            ${PROJECT_SOURCE_DIR}/src/utils
             ${PROJECT_SOURCE_DIR}/src/ecs
             ${PROJECT_SOURCE_DIR}/src/ecs/system
     )
@@ -30,7 +31,12 @@ add_executable(COMP_8552_Week1_CLion src/main.cpp src/Game.cpp
         src/ecs/system/MovementSystem.h
         src/ecs/system/RenderSystem.h
         src/ecs/World.h
-        src/Vector2D.cpp)
+        src/utils/Vector2D.cpp
+        src/utils/Collision.h
+        src/utils/Collision.cpp
+        src/ecs/system/CollisionSystem.h
+        src/ecs/system/CollisionSystem.cpp
+        src/ecs/World.cpp)
 
 target_link_libraries(COMP_8552_Week1_CLion
         SDL3

@@ -5,8 +5,8 @@
 #ifndef COMP_8552_WEEK1_CLION_COMPONENT_H
 #define COMP_8552_WEEK1_CLION_COMPONENT_H
 #include <SDL3/SDL_render.h>
-
-#include "../Vector2D.h"
+#include <string>
+#include "../utils/Vector2D.h"
 
 struct Transform {
     Vector2D position{};
@@ -29,6 +29,12 @@ struct Sprite {
     SDL_Texture* texture = nullptr;
     SDL_FRect src{};
     SDL_FRect dst{};
+};
+
+struct Collider
+{
+    std::string tag;
+    SDL_FRect rect{};
 };
 
 #endif //COMP_8552_WEEK1_CLION_COMPONENT_H

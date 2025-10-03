@@ -7,7 +7,9 @@
 #include <memory>
 #include <vector>
 
+#include "CollisionSystem.h"
 #include "Entity.h"
+#include "EventManager.h"
 #include "KeyboardInputSystem.h"
 #include "MovementSystem.h"
 #include "RenderSystem.h"
@@ -18,10 +20,15 @@ private:
     MovementSystem movementSystem;
     RenderSystem renderSystem;
     KeyboardInputSystem KeyboardInputSystem;
+    CollisionSystem collisionSystem;
+    EventManager eventManager;
 public:
+    World();
+
     void update(float deltaTime, const SDL_Event& event) {
         KeyboardInputSystem.update(entities, event);
         movementSystem.update(entities, deltaTime);
+        collisionSystem.update(*this);
         cleanup();
     }
 
@@ -47,6 +54,11 @@ public:
             [](std::unique_ptr<Entity>& e) {
                 return !e->isActive();
             });
+    }
+
+    EventManager& getEventManager()
+    {
+        return eventManager;
     }
 };
 
