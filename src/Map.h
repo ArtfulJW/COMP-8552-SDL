@@ -22,6 +22,7 @@ public:
     int width{}, height{};
     std::vector<std::vector<int>> tileData;
     std::vector<Collider> colliders;
+    std::vector<Transform> spawnPoints;
 
 // private:
 //     SDL_FRect src{}, dest{};

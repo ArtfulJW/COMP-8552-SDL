@@ -93,6 +93,16 @@ void Map::load(const char *path, SDL_Texture *ts) {
         colliders.push_back(c);
     }
 
+    auto* objectGroupTwo = objectGroup->NextSiblingElement("objectgroup");
+    for (auto* obj = objectGroupTwo->FirstChildElement("object"); obj != nullptr; obj = obj->NextSiblingElement("object")) {
+        Transform t;
+        t.position.x = obj->FloatAttribute("x");
+        t.position.y = obj->FloatAttribute("y");
+        t.oldPosition = t.position;
+        t.scale = 1.0f;
+        t.rotation = 0.0f;
+        spawnPoints.push_back(t);
+    }
 }
 
 
