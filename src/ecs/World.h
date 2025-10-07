@@ -11,11 +11,13 @@
 #include "Entity.h"
 #include "EventManager.h"
 #include "KeyboardInputSystem.h"
+#include "Map.h"
 #include "MovementSystem.h"
 #include "RenderSystem.h"
 
 class World {
 private:
+    Map map;
     std::vector<std::unique_ptr<Entity>> entities;
     MovementSystem movementSystem;
     RenderSystem renderSystem;
@@ -33,6 +35,7 @@ public:
     }
 
     void render() {
+        map.draw();
         renderSystem.render(entities);
     }
 
@@ -60,6 +63,8 @@ public:
     {
         return eventManager;
     }
+
+    Map& getMap() { return map; }
 };
 
 #endif //COMP_8552_WEEK1_CLION_WORLD_H

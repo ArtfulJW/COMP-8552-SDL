@@ -4,75 +4,138 @@
 
 #include "Map.h"
 #include "TextureManager.h"
+#include <sstream>
+#include <tinyxml2.h>
 
-int InMapData[10][15] {
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,1,1,2,0,0,0,0,0,0,0},
-    {0,0,0,0,0,1,1,1,0,0,0,0,0,0,0},
-    {0,0,0,0,0,2,2,2,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-};
+// int InMapData[10][15] {
+//     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+//     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+//     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+//     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+//     {0,0,0,0,0,1,1,2,0,0,0,0,0,0,0},
+//     {0,0,0,0,0,1,1,1,0,0,0,0,0,0,0},
+//     {0,0,0,0,0,2,2,2,0,0,0,0,0,0,0},
+//     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+//     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+//     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+// };
+//
+// Map::Map():
+//     Water(TextureManager::Load("../Asset/water.png")),
+//     Grass(TextureManager::Load("../Asset/grass.png")),
+//     Dirt(TextureManager::Load("../Asset/dirt.png"))
+// {
+//     LoadMap(InMapData);
+//
+//     // What part of the image do we want?
+//     src.x = src.y = 0;
+//     src.w = src.h = 32;
+//
+//     // Where do we want to display it?
+//     dest.x = dest.y = 0;
+//
+//     // How big do we want to display it?
+//     dest.w = dest.h = 64;
+// }
+//
+// Map::~Map() {
+//     if (Water) SDL_DestroyTexture(Water);
+//     if (Grass) SDL_DestroyTexture(Grass);
+//     if (Dirt) SDL_DestroyTexture(Dirt);
+// }
+//
+// void Map::LoadMap(int Data[10][15]) {
+//     for (int row = 0; row < 10; row++) {
+//         for (int col = 0; col < 15; col++) {
+//             MapData[row][col] = Data[row][col];
+//         }
+//     }
+// }
 
-Map::Map():
-    Water(TextureManager::Load("../Asset/water.png")),
-    Grass(TextureManager::Load("../Asset/grass.png")),
-    Dirt(TextureManager::Load("../Asset/dirt.png"))
-{
-    LoadMap(InMapData);
+void Map::load(const char *path, SDL_Texture *ts) {
+    tileset = ts;
+    tinyxml2::XMLDocument doc;
+    doc.LoadFile(path);
 
-    // What part of the image do we want?
-    src.x = src.y = 0;
-    src.w = src.h = 32;
+    // Parse width and height of map
+    auto* mapNode = doc.FirstChildElement("map");
+    width = mapNode->IntAttribute("width");
+    height = mapNode->IntAttribute("height");
 
-    // Where do we want to display it?
-    dest.x = dest.y = 0;
+    // Parse terrain data
+    auto* layer = mapNode->FirstChildElement("layer");
+    auto* data = layer->FirstChildElement("data");
 
-    // How big do we want to display it?
-    dest.w = dest.h = 64;
-}
+    std::string csv = data->GetText();
+    std::stringstream ss(csv);
+    tileData = std::vector(height, std::vector<int>(width));
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            std::string val;
+            // Read characters from string stream until it hits a comma, or is at the end of the stream.
+            if (!std::getline(ss, val, ',')) break;
 
-Map::~Map() {
-    if (Water) SDL_DestroyTexture(Water);
-    if (Grass) SDL_DestroyTexture(Grass);
-    if (Dirt) SDL_DestroyTexture(Dirt);
-}
-
-void Map::LoadMap(int Data[10][15]) {
-    for (int row = 0; row < 10; row++) {
-        for (int col = 0; col < 15; col++) {
-            MapData[row][col] = Data[row][col];
+            // String to int converter (std::stoi)
+            tileData[i][j] = std::stoi(val);
         }
     }
+
+    // Parse collider data
+    auto* objectGroup = layer->NextSiblingElement("objectgroup");
+
+    // Create a for loop with initialization, condition and an increment
+    for (auto* obj = objectGroup->FirstChildElement("object"); obj != nullptr; obj = obj->NextSiblingElement("object")) {
+        Collider c;
+        c.rect.x = obj->FloatAttribute("x");
+        c.rect.y = obj->FloatAttribute("y");
+        c.rect.w = obj->FloatAttribute("width");
+        c.rect.h = obj->FloatAttribute("height");
+        colliders.push_back(c);
+    }
+
 }
 
-void Map::DrawMap() {
-    int type = 0;
 
-    for (int row = 0; row < 10; row++) {
-        for (int col = 0; col < 15; col++) {
-            type = MapData[row][col];
+void Map::draw() {
+    // int type = 0;
 
-            dest.x = col * 64;
-            dest.y = row * 64;
+    SDL_FRect src{}, dest{};
+    dest.w = dest.h = 32;
+
+    for (int row = 0; row < height; row++) {
+        for (int col = 0; col < width; col++) {
+            int type = tileData[row][col];
+
+            dest.x = static_cast<float>(col) * dest.w;
+            dest.y = static_cast<float>(row) * dest.h;
 
             switch (type) {
-                case 0:
-                    TextureManager::Draw(Water, src, dest);
-                    break;
                 case 1:
-                    TextureManager::Draw(Dirt, src, dest);
+                    // Dirt
+                    src.x = 0;
+                    src.y = 0;
+                    src.w = 32;
+                    src.h = 32;
                     break;
                 case 2:
-                    TextureManager::Draw(Grass, src, dest);
+                    // Grass
+                    src.x = 32;
+                    src.y = 0;
+                    src.w = 32;
+                    src.h = 32;
+                    break;
+                case 4:
+                    // Water
+                    src.x = 32;
+                    src.y = 32;
+                    src.w = 32;
+                    src.h = 32;
                     break;
                 default:
                     break;
             }
+
+            TextureManager::Draw(tileset, src, dest);
         }
     }
 }

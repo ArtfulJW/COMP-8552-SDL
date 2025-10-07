@@ -19,6 +19,9 @@ public:
                 auto& t = entity->getComponent<Transform>();
                 auto& v = entity->getComponent<Velocity>();
 
+                // Track previous frame's pos
+                t.oldPosition = t.position;
+
                 Vector2D directionVec = v.direction;
 
                 // Normalize Vector

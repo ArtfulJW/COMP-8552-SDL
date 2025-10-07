@@ -13,6 +13,7 @@ if(WIN32)
             ${PROJECT_SOURCE_DIR}/src/utils
             ${PROJECT_SOURCE_DIR}/src/ecs
             ${PROJECT_SOURCE_DIR}/src/ecs/system
+            ${PROJECT_SOURCE_DIR}/src/vendor
     )
     link_directories(
             ${SDL3_PATH}/lib
@@ -36,7 +37,9 @@ add_executable(COMP_8552_Week1_CLion src/main.cpp src/Game.cpp
         src/utils/Collision.cpp
         src/ecs/system/CollisionSystem.h
         src/ecs/system/CollisionSystem.cpp
-        src/ecs/World.cpp)
+        src/ecs/World.cpp
+        src/vendor/tinyxml2.cpp
+)
 
 target_link_libraries(COMP_8552_Week1_CLion
         SDL3
