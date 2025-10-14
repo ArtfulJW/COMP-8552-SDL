@@ -3,6 +3,9 @@
 //
 
 #include "Map.h"
+
+#include <cmath>
+
 #include "TextureManager.h"
 #include <sstream>
 #include <tinyxml2.h>
@@ -106,7 +109,7 @@ void Map::load(const char *path, SDL_Texture *ts) {
 }
 
 
-void Map::draw() {
+void Map::draw(const Camera& cam) {
     // int type = 0;
 
     SDL_FRect src{}, dest{};
@@ -116,8 +119,13 @@ void Map::draw() {
         for (int col = 0; col < width; col++) {
             int type = tileData[row][col];
 
-            dest.x = static_cast<float>(col) * dest.w;
-            dest.y = static_cast<float>(row) * dest.h;
+            float worldX = static_cast<float>(col) * dest.w;
+            float worldY = static_cast<float>(row) * dest.h;
+
+            // Move the tiles or map relative to the camera
+            // Convert from world space to screen space
+            dest.x = std::round(worldX - cam.view.x);
+            dest.y = std::round(worldY - cam.view.y);
 
             switch (type) {
                 case 1:

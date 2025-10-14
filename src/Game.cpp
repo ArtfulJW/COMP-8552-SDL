@@ -1,6 +1,7 @@
 ﻿#include "Game.h"
 
 // #include "GameObject.h"
+#include "AssetManager.h"
 #include "Map.h"
 #include "iostream"
 #include "ostream"
@@ -54,6 +55,8 @@ void Game::init(const char* title, int width, int height, bool bIsFullscreen)
         bIsRunning = false;
     }
 
+    AssetManager::loadAnimation("player", "../asset/animations/bull_animations.xml");
+
     world.getMap().load("../Asset/map.tmx", TextureManager::Load("../Asset/tileset.png"));
     for (auto& collider : world.getMap().colliders) {
         auto& e = world.createEntity();
@@ -86,17 +89,33 @@ void Game::init(const char* title, int width, int height, bool bIsFullscreen)
         itemCollider.rect.h = itemDest.h;
     }
 
+    auto& cam = world.createEntity();
+    SDL_FRect camView;
+    camView.w = width;
+    camView.h = height;
+    cam.addComponent<Camera>(camView, world.getMap().width * 32, world.getMap().height * 32);
+
     auto& player(world.createEntity());
     auto& playerTransform = player.addComponent<Transform>(Vector2D(0,0), 0.0f, 1.0f);
     auto& playerVelocity = player.addComponent<Velocity>(Vector2D(0,0), 120.0f);
 
-    SDL_Texture* tex = TextureManager::Load("../asset/mario.png");
-    SDL_FRect playerSrc{0,0,32,44};
-    SDL_FRect playerDst{playerTransform.position.x,playerTransform.position.y,64,88};
+    Animation anim = AssetManager::getAnimation("player");
+    player.addComponent<Animation>(anim);
+
+    // No longer using Mario
+    // SDL_Texture* tex = TextureManager::Load("../asset/mario.png");
+    // SDL_FRect playerSrc{0,0,32,44};
+
+    SDL_Texture* tex = TextureManager::Load("../asset/animations/bull_anim.png");
+    SDL_FRect playerSrc = anim.clips[anim.currentClip].frameIndices[0]; // Get the first frame of the current clip
+    SDL_FRect playerDst{playerTransform.position.x,playerTransform.position.y,64,64};
     player.addComponent<Sprite>(tex, playerSrc, playerDst);
     auto& playerCollider = player.addComponent<Collider>("player");
     playerCollider.rect.w = playerDst.w;
     playerCollider.rect.h = playerDst.h;
+
+    // Add player tag
+    player.addComponent<PlayerTag>();
 }
 
 void Game::HandleEvents()

@@ -6,6 +6,9 @@
 #define COMP_8552_WEEK1_CLION_COMPONENT_H
 #include <SDL3/SDL_render.h>
 #include <string>
+#include <unordered_map>
+
+#include "AnimationClip.h"
 #include "../utils/Vector2D.h"
 
 struct Transform {
@@ -37,5 +40,21 @@ struct Collider
     std::string tag;
     SDL_FRect rect{};
 };
+
+struct Animation {
+    std::unordered_map<std::string, AnimationClip> clips{};
+    std::string currentClip;
+    float time{}; // time is accumulated for the current frame
+    int currentFrame{}; // index of the current frame in the clip
+    float speed = 0.1f; // time per frame
+};
+
+struct Camera {
+    SDL_FRect view;
+    float worldWidth;
+    float worldHeight;
+};
+
+struct PlayerTag{};
 
 #endif //COMP_8552_WEEK1_CLION_COMPONENT_H
