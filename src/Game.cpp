@@ -55,13 +55,13 @@ void Game::init(const char* title, int width, int height, bool bIsFullscreen)
         bIsRunning = false;
     }
 
-    AssetManager::loadAnimation("player", "../asset/animations/bull_animations.xml");
+    AssetManager::loadAnimation("player", "../asset/animations/Swordsman_animations.xml");
 
     world.getMap().load("../Asset/map.tmx", TextureManager::Load("../Asset/tileset.png"));
     for (auto& collider : world.getMap().colliders) {
         auto& e = world.createEntity();
         e.addComponent<Transform>(Vector2D(collider.rect.x, collider.rect.y), 0.0f, 1.0f);
-        auto& c = e.addComponent<Collider>("wall");
+        auto& c = e.addComponent<Collider>("no-wall");
         c.rect.x = collider.rect.x;
         c.rect.y = collider.rect.y;
         c.rect.w = collider.rect.w;
@@ -106,7 +106,7 @@ void Game::init(const char* title, int width, int height, bool bIsFullscreen)
     // SDL_Texture* tex = TextureManager::Load("../asset/mario.png");
     // SDL_FRect playerSrc{0,0,32,44};
 
-    SDL_Texture* tex = TextureManager::Load("../asset/animations/bull_anim.png");
+    SDL_Texture* tex = TextureManager::Load("../asset/animations/Swordsman_walk.png");
     SDL_FRect playerSrc = anim.clips[anim.currentClip].frameIndices[0]; // Get the first frame of the current clip
     SDL_FRect playerDst{playerTransform.position.x,playerTransform.position.y,64,64};
     player.addComponent<Sprite>(tex, playerSrc, playerDst);
