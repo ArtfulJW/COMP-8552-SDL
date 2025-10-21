@@ -1,13 +1,15 @@
 ﻿#include "Game.h"
 
 // #include "GameObject.h"
-#include "AssetManager.h"
+#include "manager/AssetManager.h"
 #include "Map.h"
 #include "iostream"
 #include "ostream"
 
 // Map* map = nullptr;
 // GameObject* player = nullptr;
+
+std::function<void(std::string)> Game::onSceneChangeRequest;
 
 Game::Game()
 {
@@ -55,67 +57,33 @@ void Game::init(const char* title, int width, int height, bool bIsFullscreen)
         bIsRunning = false;
     }
 
+    // Load Assets (just some animations)
     AssetManager::loadAnimation("player", "../asset/animations/Swordsman_animations.xml");
+    AssetManager::loadAnimation("enemy", "../asset/animations/bird_animations.xml");
 
-    world.getMap().load("../Asset/map.tmx", TextureManager::Load("../Asset/tileset.png"));
-    for (auto& collider : world.getMap().colliders) {
-        auto& e = world.createEntity();
-        e.addComponent<Transform>(Vector2D(collider.rect.x, collider.rect.y), 0.0f, 1.0f);
-        auto& c = e.addComponent<Collider>("no-wall");
-        c.rect.x = collider.rect.x;
-        c.rect.y = collider.rect.y;
-        c.rect.w = collider.rect.w;
-        c.rect.h = collider.rect.h;
+    // load scene
+    sceneManager.loadScene("Level1", "../asset/map.tmx", width, height);
+    sceneManager.loadScene("Level2", "../asset/map2.tmx", width, height);
 
-        // Have a visual of colliders
-        SDL_Texture* tex = TextureManager::Load("../Asset/tileset.png");
-        SDL_FRect colSrc {0, 32, 32, 32};
-        SDL_FRect colDst {c.rect.x, c.rect.y, c.rect.w, c.rect.h};
-        e.addComponent<Sprite>(tex, colSrc, colDst);
-    }
-    // map = new Map();
-    // player = new GameObject("../Asset/ball.png", 0, 0);
+    sceneManager.changeSceneDeferred("Level1");
 
-    // Add Entities
-    for (auto& transform : world.getMap().spawnPoints) {
-        auto& item(world.createEntity());
-        auto& itemTransform = item.addComponent<Transform>(Vector2D(transform.position.x, transform.position.y), 0.0f, 1.0f);
-        SDL_Texture* itemTex = TextureManager::Load("../asset/coin.png");
-        SDL_FRect itemSrc {0,0,32,32};
-        SDL_FRect itemDest {itemTransform.position.x, itemTransform.position.y, 32, 32};
-        item.addComponent<Sprite>(itemTex, itemSrc, itemDest);
-        auto& itemCollider = item.addComponent<Collider>("item");
-        itemCollider.rect.w = itemDest.w;
-        itemCollider.rect.h = itemDest.h;
-    }
+    // Resolve callback
+    onSceneChangeRequest = [this](std::string sceneName) {
+        if (sceneManager.currentScene->getName() == "Level2" && sceneName == "Level2") {
+            std::cout << "You Win" << std::endl;
+            bIsRunning = false;
+            return;
+        }
 
-    auto& cam = world.createEntity();
-    SDL_FRect camView;
-    camView.w = width;
-    camView.h = height;
-    cam.addComponent<Camera>(camView, world.getMap().width * 32, world.getMap().height * 32);
+        if (sceneName == "gameover") {
+            std::cout << "Game Over" << std::endl;
+            bIsRunning = false;
+            return;
+        }
 
-    auto& player(world.createEntity());
-    auto& playerTransform = player.addComponent<Transform>(Vector2D(0,0), 0.0f, 1.0f);
-    auto& playerVelocity = player.addComponent<Velocity>(Vector2D(0,0), 120.0f);
-
-    Animation anim = AssetManager::getAnimation("player");
-    player.addComponent<Animation>(anim);
-
-    // No longer using Mario
-    // SDL_Texture* tex = TextureManager::Load("../asset/mario.png");
-    // SDL_FRect playerSrc{0,0,32,44};
-
-    SDL_Texture* tex = TextureManager::Load("../asset/animations/Swordsman_walk.png");
-    SDL_FRect playerSrc = anim.clips[anim.currentClip].frameIndices[0]; // Get the first frame of the current clip
-    SDL_FRect playerDst{playerTransform.position.x,playerTransform.position.y,64,64};
-    player.addComponent<Sprite>(tex, playerSrc, playerDst);
-    auto& playerCollider = player.addComponent<Collider>("player");
-    playerCollider.rect.w = playerDst.w;
-    playerCollider.rect.h = playerDst.h;
-
-    // Add player tag
-    player.addComponent<PlayerTag>();
+        // the change scene part
+        sceneManager.changeSceneDeferred(sceneName);
+    };
 }
 
 void Game::HandleEvents()
@@ -145,7 +113,10 @@ void Game::Update(float deltaTime)
     // // Remember to update Player
     // player->update(deltaTime);
 
-    world.update(deltaTime, event);
+    // DEPRECATED, MOVED WORLD to SCENE.CPP
+    // world.update(deltaTime, event);
+
+    sceneManager.update(deltaTime, event);
 }
 
 void Game::Render()
@@ -162,7 +133,10 @@ void Game::Render()
     // map->DrawMap();
     // player->draw();
 
-    world.render();
+    // DEPRECATED, MOVED WORLD TO SCENE
+    // world.render();
+
+    sceneManager.render();
 
     SDL_RenderPresent(SDLRenderer);
 }

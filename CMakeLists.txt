@@ -39,7 +39,8 @@ add_executable(COMP_8552_Week1_CLion src/main.cpp src/Game.cpp
         src/ecs/system/CollisionSystem.cpp
         src/ecs/World.cpp
         src/vendor/tinyxml2.cpp
-        src/AssetManager.cpp
+        src/manager/AssetManager.cpp
+        src/manager/Scene.cpp
 )
 
 target_link_libraries(COMP_8552_Week1_CLion

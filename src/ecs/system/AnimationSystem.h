@@ -26,22 +26,24 @@ class AnimationSystem {
                 auto& anim = e->getComponent<Animation>();
                 auto& velocity = e->getComponent<Velocity>();
 
-                // State System
-                std::string newClip;
-                if (velocity.direction.x > 0.0f) {
-                    newClip = "walk_right";
-                }
-                else if (velocity.direction.x < 0.0f) {
-                    newClip = "walk_left";
-                }
-                else if (velocity.direction.y > 0.0f) {
-                    newClip = "walk_down";
-                }
-                else if (velocity.direction.y < 0.0f) {
-                    newClip = "walk_up";
-                }
-                else {
-                    newClip = "idle";
+                // State System ONLY FOR THE PLAYER TEMPORARY FIX
+                std::string newClip = "idle";
+                if (e->hasComponent<PlayerTag>()) {
+                    if (velocity.direction.x > 0.0f) {
+                        newClip = "walk_right";
+                    }
+                    else if (velocity.direction.x < 0.0f) {
+                        newClip = "walk_left";
+                    }
+                    else if (velocity.direction.y > 0.0f) {
+                        newClip = "walk_down";
+                    }
+                    else if (velocity.direction.y < 0.0f) {
+                        newClip = "walk_up";
+                    }
+                    else {
+                        newClip = "idle";
+                    }
                 }
 
                 /*

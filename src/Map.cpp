@@ -86,26 +86,54 @@ void Map::load(const char *path, SDL_Texture *ts) {
     // Parse collider data
     auto* objectGroup = layer->NextSiblingElement("objectgroup");
 
-    // Create a for loop with initialization, condition and an increment
-    for (auto* obj = objectGroup->FirstChildElement("object"); obj != nullptr; obj = obj->NextSiblingElement("object")) {
-        Collider c;
-        c.rect.x = obj->FloatAttribute("x");
-        c.rect.y = obj->FloatAttribute("y");
-        c.rect.w = obj->FloatAttribute("width");
-        c.rect.h = obj->FloatAttribute("height");
-        colliders.push_back(c);
+    for (int x = 0; x < 2; x++) {
+        const char* objectGroupName = objectGroup->Attribute("name");
+        if (strcmp(objectGroupName,"Collision Layer") == 0) {
+            // Create a for loop with initialization, condition and an increment
+            for (auto* obj = objectGroup->FirstChildElement("object"); obj != nullptr; obj = obj->NextSiblingElement("object")) {
+                Collider c;
+                c.rect.x = obj->FloatAttribute("x");
+                c.rect.y = obj->FloatAttribute("y");
+                c.rect.w = obj->FloatAttribute("width");
+                c.rect.h = obj->FloatAttribute("height");
+                colliders.push_back(c);
+            }
+        }
+        else if (strcmp(objectGroupName,"Item Layer") == 0) {
+            for (auto* obj = objectGroup->FirstChildElement("object"); obj != nullptr; obj = obj->NextSiblingElement("object")) {
+                Transform t;
+                t.position.x = obj->FloatAttribute("x");
+                t.position.y = obj->FloatAttribute("y");
+                t.oldPosition = t.position;
+                t.scale = 1.0f;
+                t.rotation = 0.0f;
+                spawnPoints.push_back(t);
+            }
+        }
+
+        objectGroup = objectGroup->NextSiblingElement("objectgroup");
     }
 
-    auto* objectGroupTwo = objectGroup->NextSiblingElement("objectgroup");
-    for (auto* obj = objectGroupTwo->FirstChildElement("object"); obj != nullptr; obj = obj->NextSiblingElement("object")) {
-        Transform t;
-        t.position.x = obj->FloatAttribute("x");
-        t.position.y = obj->FloatAttribute("y");
-        t.oldPosition = t.position;
-        t.scale = 1.0f;
-        t.rotation = 0.0f;
-        spawnPoints.push_back(t);
-    }
+    // Create a for loop with initialization, condition and an increment
+    // for (auto* obj = objectGroup->FirstChildElement("object"); obj != nullptr; obj = obj->NextSiblingElement("object")) {
+    //     Collider c;
+    //     c.rect.x = obj->FloatAttribute("x");
+    //     c.rect.y = obj->FloatAttribute("y");
+    //     c.rect.w = obj->FloatAttribute("width");
+    //     c.rect.h = obj->FloatAttribute("height");
+    //     colliders.push_back(c);
+    // }
+    //
+    // auto* objectGroupTwo = objectGroup->NextSiblingElement("objectgroup");
+    // for (auto* obj = objectGroupTwo->FirstChildElement("object"); obj != nullptr; obj = obj->NextSiblingElement("object")) {
+    //     Transform t;
+    //     t.position.x = obj->FloatAttribute("x");
+    //     t.position.y = obj->FloatAttribute("y");
+    //     t.oldPosition = t.position;
+    //     t.scale = 1.0f;
+    //     t.rotation = 0.0f;
+    //     spawnPoints.push_back(t);
+    // }
 }
 
 

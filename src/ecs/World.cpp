@@ -6,6 +6,8 @@
 
 #include <iostream>
 
+#include "Game.h"
+
 void subscribeFreeFunction(const CollisionEvent& collision) {
     // Make sure both entities in this collision event are valid
     if (collision.entityA == nullptr || collision.entityB == nullptr)
@@ -45,8 +47,22 @@ void subscribeFreeFunction(const CollisionEvent& collision) {
 World::World()
 {
     // Subscribe to the collision events
-    eventManager.subscribe<CollisionEvent>([](const CollisionEvent& collision)
+    eventManager.subscribe([this](const CollisionEvent& collision)
     {
+        Entity* sceneStateEntity = nullptr;
+
+        // find scene state entity
+        for (auto& e : entities) {
+            if (e->hasComponent<SceneState>()) {
+                sceneStateEntity = e.get();
+                break;
+            }
+        }
+
+        if (!sceneStateEntity) {
+            return;
+        }
+
         if (collision.entityA == nullptr || collision.entityB == nullptr)
         {
             return;
@@ -63,6 +79,7 @@ World::World()
         Entity* player = nullptr;
         Entity* item = nullptr;
         Entity* wall = nullptr;
+        Entity* projectile = nullptr;
 
         if (colliderA.tag == "player" && colliderB.tag == "item")
         {
@@ -78,6 +95,14 @@ World::World()
         if (player && item)
         {
             item->destroy();
+
+            // scene state
+            auto& sceneState = sceneStateEntity->getComponent<SceneState>();
+            sceneState.coinsCollected++;
+
+            if (sceneState.coinsCollected > 1) {
+                Game::onSceneChangeRequest("Level2");
+            }
         }
 
         // Player vs wall
@@ -98,7 +123,25 @@ World::World()
             t.position = t.oldPosition;
         }
 
+        // Player vs projectile
+        if (colliderA.tag == "player" && colliderB.tag == "projectile")
+        {
+            player = collision.entityA;
+            projectile = collision.entityB;
+        }
+        else if (colliderA.tag == "projectile" && colliderB.tag == "player")
+        {
+            player = collision.entityB;
+            projectile = collision.entityA;
+        }
+
+        if (player && projectile) {
+            player->destroy();
+            // Change Scenes defer
+            Game::onSceneChangeRequest("gameover");
+        }
+
     });
 
-    eventManager.subscribe<CollisionEvent>(subscribeFreeFunction);
+    eventManager.subscribe(subscribeFreeFunction);
 }

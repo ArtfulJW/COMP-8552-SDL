@@ -4,6 +4,7 @@
 
 #ifndef COMP_8552_WEEK1_CLION_COMPONENT_H
 #define COMP_8552_WEEK1_CLION_COMPONENT_H
+#include <functional>
 #include <SDL3/SDL_render.h>
 #include <string>
 #include <unordered_map>
@@ -55,6 +56,18 @@ struct Camera {
     float worldHeight;
 };
 
+struct TimedSpawner {
+    float spawnInterval{};
+    std::function<void()> spawnCallback{};
+    float timer{};
+};
+
+// our game state
+struct SceneState {
+    int coinsCollected = 0;
+};
+
 struct PlayerTag{};
+struct ProjectileTag{};
 
 #endif //COMP_8552_WEEK1_CLION_COMPONENT_H
