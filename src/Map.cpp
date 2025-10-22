@@ -84,13 +84,14 @@ void Map::load(const char *path, SDL_Texture *ts) {
     }
 
     // Parse collider data
-    auto* objectGroup = layer->NextSiblingElement("objectgroup");
+    // auto* objectGroup = layer->NextSiblingElement("objectgroup");
 
-    for (int x = 0; x < 2; x++) {
-        const char* objectGroupName = objectGroup->Attribute("name");
+    // Iterate through all elements that're objectgroup
+    for (tinyxml2::XMLElement* element = layer->NextSiblingElement("objectgroup"); element != nullptr; element = element->NextSiblingElement("objectgroup")) {
+        const char* objectGroupName = element->Attribute("name");
         if (strcmp(objectGroupName,"Collision Layer") == 0) {
             // Create a for loop with initialization, condition and an increment
-            for (auto* obj = objectGroup->FirstChildElement("object"); obj != nullptr; obj = obj->NextSiblingElement("object")) {
+            for (auto* obj = element->FirstChildElement("object"); obj != nullptr; obj = obj->NextSiblingElement("object")) {
                 Collider c;
                 c.rect.x = obj->FloatAttribute("x");
                 c.rect.y = obj->FloatAttribute("y");
@@ -100,7 +101,7 @@ void Map::load(const char *path, SDL_Texture *ts) {
             }
         }
         else if (strcmp(objectGroupName,"Item Layer") == 0) {
-            for (auto* obj = objectGroup->FirstChildElement("object"); obj != nullptr; obj = obj->NextSiblingElement("object")) {
+            for (auto* obj = element->FirstChildElement("object"); obj != nullptr; obj = obj->NextSiblingElement("object")) {
                 Transform t;
                 t.position.x = obj->FloatAttribute("x");
                 t.position.y = obj->FloatAttribute("y");
@@ -111,7 +112,7 @@ void Map::load(const char *path, SDL_Texture *ts) {
             }
         }
 
-        objectGroup = objectGroup->NextSiblingElement("objectgroup");
+        // objectGroup = objectGroup->NextSiblingElement("objectgroup");
     }
 
     // Create a for loop with initialization, condition and an increment
